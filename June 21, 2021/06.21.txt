@@ -1,0 +1,49 @@
+관계형데이터베이스는 관계를 테이블로 표현
+객체지향프로그래밍 - 객체 중심으로 프로그램을 개발하는 것. 
+객체를 정의하고 객체와 객체 사이의 관계를 명료화하는 것.
+er다이어그램 (관계형데이터베이스)
+-----------------------------------------------------------------------
+db연결
+1. dbserver에 연결. 정상연결수립되면 커넥션 객체를 반환
+conn = pymysql.connect('서버주소', '계정', '패스워드')    
+(커넥트 함수는 로그인을 하는 작업) (연결 후 유지되는 상태를 세션이라고 함)
+2. 반환받은 커넥션 객체로 커서 객체를 생선한다
+cur = conn.cursor() #cursor 객체가 db작업할 수 있는 함수들을 가지고 있다.
+3. 커서 객체로 insert, select, update, delete 작업수행
+cur.execute('쿼리문/insert, select, update, delete')
+쓰기작업은 이대로 끝
+conn.commit()
+$. select는 검색한 결과를 꺼내야함.검색한 결과는 cursor객체에
+-----------------------------------------------------------------------
+<쓰기작업 - insert/update/delete>
+1. db연결 -> 커넥션 객체 반환
+2. cursor객체 생성 -> cursor객체로 sql작업할 수 있음
+3. 실행할 sqp 정의. sql문에 변수값이 들어갈 위치에 자리만 잡아놓는다
+-> 포맷문자(%s에 문자열. %d에 정수. %f에 실수.)
+-> sqp = 'insert into test values(%s, %d, %f)'
+-> 포맷문자를 사용했으면 각 자라의 어떤 값이 들어갈지 매칭을 해주어야 한다.
+-> 튜플을 이용해서 포맷문자에 들어갈 변수들을 순서대로 매칭
+    name = 'aaa'      #문자열
+    age = 12           #정수
+    height = 156.34  #실수
+    vals = (name, age, height) #위 순서에 맞게
+4. cursor객체의 execute()으로 sql실행 => cur.execute(sql, vals)
+5. 쓰기 커밋 => conn.commit() #db에 쓰기 완료 #commit을 해야 나 뿐만이 아닌 다른 유저들에게 보임
+6. db close
+<읽기 작업>
+1. db연결
+2. cursor객체 생성
+3. 실행할 sqp 정의
+4. cursor객체의 execute()으로 sql실행 -> 검색 결과가 cursor에 저장
+5. 검색 결과 cursor에서 fetch
+  1)여러줄 검색
+    for row in cursor: #cursor에석 검색된 한 줄씩 꺼내서 row에 담음
+	row[0], row[1], row[2] #한 줄에서 각 컬럼 값 추출
+  2)한줄 검색
+    row = cursor.fetchone() #cursor에서 검색된 한 줄만 추출
+    row[0], row[1], row[2] #한 줄에서 각 컬럼 값 추출
+6. db close
+.
+.
+.
+이런게 반복.
